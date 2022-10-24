@@ -44,7 +44,7 @@ bot.extension_count = 0
 
 #global database connections
 loop = asyncio.get_event_loop()
-bot.db = loop.run_until_complete(aiosqlite.connect('markov.db'))
+bot.db = loop.run_until_complete(aiosqlite.connect('bot.db'))
 
 @bot.event
 async def on_ready():
@@ -59,6 +59,7 @@ async def on_ready():
 
 extensions = (
     "commands",
+    "messagecounting"
 
     )
 

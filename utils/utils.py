@@ -1,8 +1,8 @@
 import discord
 ####################################################################################
 async def setup(bot):
-    await bot.mark.execute("CREATE TABLE IF NOT EXISTS messagecount(user_id INTERGER, messagecount INTERGER)")
-    await bot.mark.execute("CREATE TABLE IF NOT EXISTS messagecount(guild_id INTERGER, role_id INTERGER, ongoing_game INTERGER)")
+    await bot.db.execute("CREATE TABLE IF NOT EXISTS messagecount(user_id INTERGER, messagecount INTERGER)")
+    await bot.db.execute("CREATE TABLE IF NOT EXISTS messagecount(guild_id INTERGER, role_id INTERGER, ongoing_game INTERGER)")
 ####################################################################################
 async def get_or_fetch_channel(self, channel_id):
     """Only queries API if the channel is not in cache."""
