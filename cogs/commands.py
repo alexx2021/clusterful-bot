@@ -1,10 +1,8 @@
-from ast import Interactive
 from typing import Optional, Literal
 
 import discord
 from discord.ext import commands
 from discord import app_commands
-from discord import Object
 from discord.ext.commands import Context, Greedy
 
 
