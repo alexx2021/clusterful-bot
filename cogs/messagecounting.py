@@ -27,22 +27,15 @@ class MessageCounting(commands.Cog, command_attrs=dict(hidden=True)):
         if not retry_after:
             serverConfig = await self.bot.db.execute('SELECT * FROM guild_config WHERE guild_id = ?',(message.guild.id,))
             serverConfig = await serverConfig.fetchone()
-            print("===============================")
             if serverConfig: #if the guild has a config set
-                print("guild has config set")
                 if str(serverConfig[1]) == 'True': #ongoing game
-                    print("guild has ongoing game")
                     if str(serverConfig[2]) in str(message.author.roles): #if user has player role
-                        print("PLayer has player role")
                         if not (str(serverConfig[3]) in str(message.author.roles)): #if loser role not in player roles
-                            print("doesnt have loser role DONE")
                             charRequirement = serverConfig[4]
                             wordRequirement = serverConfig[5]
                             if len(message.clean_content) >= charRequirement: #check char requirement
-                                print("passed char req")
                                 splitString = message.clean_content.split()
-                                if len(splitString) >= wordRequirement:
-                                    print("passed word req")
+                                if len(splitString) >= wordRequirement: #check word req
                                     existingPlayer = await self.bot.db.execute('SELECT user_id, message_count FROM messagecount WHERE guild_id = ? AND user_id = ?',(message.guild.id, message.author.id))
                                     existingPlayer = await existingPlayer.fetchone()
                                     if not existingPlayer:
