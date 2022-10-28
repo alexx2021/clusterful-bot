@@ -6,7 +6,7 @@ class MessageCounting(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
         self.cd_mapping = commands.CooldownMapping.from_cooldown(
-            1, 1, commands.BucketType.member
+            1, 10, commands.BucketType.member
         )
 
     @commands.Cog.listener()
