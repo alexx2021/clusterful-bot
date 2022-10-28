@@ -102,6 +102,23 @@ class Commands(commands.Cog, command_attrs=dict(hidden=False)):
             await interaction.followup.send("Updated an existing config!", ephemeral=True)
         
 
+                
+    @app_commands.default_permissions()
+    @app_commands.guild_only()
+    @app_commands.command(description="Change someone's message count")
+    async def edit_msg_count(self, interaction: discord.Interaction, member: discord.Member, new_msg_count: int):
+        await interaction.response.defer()
+        existingPlayer = await self.bot.db.execute('SELECT user_id FROM messagecount WHERE guild_id = ? AND user_id = ?',(interaction.guild_id, member.id))
+        existingPlayer = await existingPlayer.fetchone()
+        if not existingPlayer:
+            await self.bot.db.execute('INSERT INTO messagecount VALUES (?, ?, ?)',(interaction.guild_id, member.id, new_msg_count))
+            await self.bot.db.commit()
+            await interaction.followup.send(f"{member}'s count has been updated to {new_msg_count}!")
+        else:
+            await self.bot.db.execute('UPDATE messagecount SET message_count = ? WHERE guild_id = ? AND user_id = ?', (new_msg_count, interaction.guild_id, member.id))
+            await self.bot.db.commit()
+            await interaction.followup.send(f"{member}'s count has been updated to {new_msg_count}!")
+
 
 async def setup(bot):
     await bot.add_cog(Commands(bot)) 

@@ -24,10 +24,9 @@ class MessageCounting(commands.Cog, command_attrs=dict(hidden=True)):
         bucket = self.cd_mapping.get_bucket(message)
         retry_after = bucket.update_rate_limit()
         if not retry_after:
-            print("counted")
-            ongoingGame = await self.bot.db.execute('SELECT ongoing_game FROM guild_config WHERE guild_id = ?',(message.guild.id,))
+            ongoingGame = await self.bot.db.execute('SELECT * FROM guild_config WHERE guild_id = ?',(message.guild.id,))
             ongoingGame = await ongoingGame.fetchone()
-            if str(ongoingGame[0]) == 'True':
+            if str(ongoingGame[1]) == 'True':
                 existingPlayer = await self.bot.db.execute('SELECT user_id, message_count FROM messagecount WHERE guild_id = ? AND user_id = ?',(message.guild.id, message.author.id))
                 existingPlayer = await existingPlayer.fetchone()
                 if not existingPlayer:
@@ -36,6 +35,8 @@ class MessageCounting(commands.Cog, command_attrs=dict(hidden=True)):
                 else:
                     await self.bot.db.execute('UPDATE messagecount SET message_count = ? WHERE guild_id = ? AND user_id = ?', (existingPlayer[1] + 1, message.guild.id, message.author.id))
                     await self.bot.db.commit()
+
+        # TODO add out role+in role to qualify for xp
 
         
 
