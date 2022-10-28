@@ -58,7 +58,9 @@ async def on_ready():
 
 extensions = (
     "commands",
-    "messagecounting"
+    "messageCounting",
+    "roleEvents",
+    "errors",
 
     )
 
