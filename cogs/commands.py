@@ -41,7 +41,17 @@ class Commands(commands.Cog, command_attrs=dict(hidden=False)):
         for rank, row in enumerate(rankings, start=1):
             user_id = row[1]
             user_msg_count = row[2]
-            e=f"**{rank}**. <@{user_id}> | {user_msg_count} Messages"
+
+            playerStatus = await self.bot.db.execute("SELECT * FROM player_status WHERE guild_id = ? AND user_id = ?",(interaction.guild_id, user_id))
+            playerStatus = await playerStatus.fetchone()
+            if playerStatus:
+                if playerStatus[2] == "OUT":
+                    e = f"~~**{rank}**. <@{user_id}> | {user_msg_count} Messages~~"
+                else:
+                    e = f"**{rank}**. <@{user_id}> | {user_msg_count} Messages"
+            else:
+                e = f"**{rank}**. <@{user_id}> | {user_msg_count} Messages"
+
             desc.append(e)
 
         await Paginator.start(interaction.followup, entries=desc, per_page=10)
