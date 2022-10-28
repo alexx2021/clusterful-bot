@@ -40,6 +40,8 @@ activity=discord.Streaming(name=f"!help", url='https://www.twitch.tv/alexxwastak
 
 #counts number of loaded extensions
 bot.extension_count = 0
+#ignored channels
+bot.ignored_channels = [850460792486363146]
 
 #global database connections
 loop = asyncio.get_event_loop()
