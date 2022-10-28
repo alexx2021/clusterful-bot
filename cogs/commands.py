@@ -13,9 +13,11 @@ from utils.paginator import BaseButtonPaginator
 class Paginator(BaseButtonPaginator):
         
     async def format_page(self, entries):
-        embed = discord.Embed(title=(f'Queue'), color=0x7289da)
-        for index, entry in enumerate(entries):
-            embed.add_field(name=str(index), value=entry)
+        newEntries = ""
+        for thing in entries:
+            newEntries = newEntries + f"{thing}\n"
+
+        embed = discord.Embed(title=(f'Leaderboard'), color=0x7289da, description=f"{newEntries}")
         
         embed.set_footer(text='Page {0.current_page}/{0.total_pages}'.format(self))
         
@@ -26,6 +28,25 @@ class Paginator(BaseButtonPaginator):
 class Commands(commands.Cog, command_attrs=dict(hidden=False)):
     def __init__(self, bot):
         self.bot = bot
+
+
+    @app_commands.guild_only()
+    @app_commands.command(description="See the server's leaderboard")
+    async def leaderboard(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
+        rankings = await self.bot.db.execute_fetchall('SELECT * FROM messagecount WHERE guild_id = ? ORDER BY message_count DESC', (interaction.guild_id,))
+        if not rankings:
+            return await interaction.followup.send("There are no people on the leaderboard!")
+        
+        desc = []
+        for rank, row in enumerate(rankings, start=1):
+            user_id = row[1]
+            user_msg_count = row[2]
+            e=f"**{rank}**. <@{user_id}> | {user_msg_count} Messages"
+            desc.append(e)
+
+        await Paginator.start(interaction.followup, entries=desc, per_page=10)
     
     @commands.hybrid_command(name="ping", description="hmmm")
     async def ping(self, ctx: commands.Context) -> None:
@@ -40,7 +61,6 @@ class Commands(commands.Cog, command_attrs=dict(hidden=False)):
         await ctx.send(rows)
         rows = await self.bot.db.execute_fetchall('SELECT * FROM messagecount')
         await ctx.send(rows)
-
 
     @commands.command(description="!sync -> global sync\n!sync ~ -> sync current guild\n!sync * -> copies all global app commands to current guild and syncs\n!sync ^ -> clears all commands from the current guild target and syncs (removes guild commands)\n!sync id_1 id_2 -> syncs guilds with id 1 and 2")
     @commands.guild_only()
@@ -99,9 +119,7 @@ class Commands(commands.Cog, command_attrs=dict(hidden=False)):
             await self.bot.db.execute('INSERT INTO guild_config VALUES (?, ?, ?, ?, ?, ?)',(interaction.guild_id, str(start_game_now), game_player_role.id, lost_game_role.id, minimum_number_chars, minimum_number_words))
             await self.bot.db.commit()
             await interaction.followup.send("Updated an existing config!", ephemeral=True)
-        
-
-                
+              
     @app_commands.default_permissions()
     @app_commands.guild_only()
     @app_commands.command(description="Change someone's message count")
