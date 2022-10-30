@@ -46,11 +46,11 @@ class Commands(commands.Cog, command_attrs=dict(hidden=False)):
             playerStatus = await playerStatus.fetchone()
             if playerStatus:
                 if playerStatus[2] == "OUT":
-                    e = f"~~**{rank}**. <@{user_id}> | {user_msg_count} Messages~~"
+                    e = f"~~**{rank}**. <@{user_id}> | {user_msg_count} Words~~"
                 else:
-                    e = f"**{rank}**. <@{user_id}> | {user_msg_count} Messages"
+                    e = f"**{rank}**. <@{user_id}> | {user_msg_count} Words"
             else:
-                e = f"**{rank}**. <@{user_id}> | {user_msg_count} Messages"
+                e = f"**{rank}**. <@{user_id}> | {user_msg_count} Words"
 
             desc.append(e)
 
@@ -131,23 +131,23 @@ class Commands(commands.Cog, command_attrs=dict(hidden=False)):
     @app_commands.default_permissions()
     @app_commands.guild_only()
     @app_commands.command(description="Change someone's message count")
-    async def edit_msg_count(self, interaction: discord.Interaction, member: discord.Member, new_msg_count: int):
+    async def edit_word_count(self, interaction: discord.Interaction, member: discord.Member, new_word_count: int):
         await interaction.response.defer()
         existingPlayer = await self.bot.db.execute('SELECT user_id FROM messagecount WHERE guild_id = ? AND user_id = ?',(interaction.guild_id, member.id))
         existingPlayer = await existingPlayer.fetchone()
         if not existingPlayer:
-            await self.bot.db.execute('INSERT INTO messagecount VALUES (?, ?, ?)',(interaction.guild_id, member.id, new_msg_count))
+            await self.bot.db.execute('INSERT INTO messagecount VALUES (?, ?, ?)',(interaction.guild_id, member.id, new_word_count))
             await self.bot.db.commit()
-            await interaction.followup.send(f"{member}'s count has been updated to {new_msg_count}!")
+            await interaction.followup.send(f"{member}'s count has been updated to {new_word_count}!")
         else:
-            await self.bot.db.execute('UPDATE messagecount SET message_count = ? WHERE guild_id = ? AND user_id = ?', (new_msg_count, interaction.guild_id, member.id))
+            await self.bot.db.execute('UPDATE messagecount SET message_count = ? WHERE guild_id = ? AND user_id = ?', (new_word_count, interaction.guild_id, member.id))
             await self.bot.db.commit()
-            await interaction.followup.send(f"{member}'s count has been updated to {new_msg_count}!")
+            await interaction.followup.send(f"{member}'s count has been updated to {new_word_count}!")
 
     @app_commands.default_permissions()
     @app_commands.guild_only()
     @app_commands.command(description="increase someone's message count by x amt")
-    async def add_msg_count(self, interaction: discord.Interaction, member: discord.Member, amt_to_add: int):
+    async def add_word_count(self, interaction: discord.Interaction, member: discord.Member, amt_to_add: int):
         await interaction.response.defer()
         existingPlayer = await self.bot.db.execute('SELECT user_id, message_count FROM messagecount WHERE guild_id = ? AND user_id = ?',(interaction.guild_id, member.id))
         existingPlayer = await existingPlayer.fetchone()
@@ -164,7 +164,7 @@ class Commands(commands.Cog, command_attrs=dict(hidden=False)):
     @app_commands.default_permissions()
     @app_commands.guild_only()
     @app_commands.command(description="decrease someone's message count by x amt")
-    async def subtract_msg_count(self, interaction: discord.Interaction, member: discord.Member, amt_to_subtract: int):
+    async def subtract_word_count(self, interaction: discord.Interaction, member: discord.Member, amt_to_subtract: int):
         await interaction.response.defer()
         existingPlayer = await self.bot.db.execute('SELECT user_id, message_count FROM messagecount WHERE guild_id = ? AND user_id = ?',(interaction.guild_id, member.id))
         existingPlayer = await existingPlayer.fetchone()
