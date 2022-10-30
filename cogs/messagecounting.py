@@ -38,11 +38,12 @@ class MessageCounting(commands.Cog, command_attrs=dict(hidden=True)):
                                 if len(splitString) >= wordRequirement: #check word req
                                     existingPlayer = await self.bot.db.execute('SELECT user_id, message_count FROM messagecount WHERE guild_id = ? AND user_id = ?',(message.guild.id, message.author.id))
                                     existingPlayer = await existingPlayer.fetchone()
+                                    pointsToAdd = len(splitString)
                                     if not existingPlayer:
-                                        await self.bot.db.execute('INSERT INTO messagecount VALUES (?, ?, ?)',(message.guild.id, message.author.id, 1))
+                                        await self.bot.db.execute('INSERT INTO messagecount VALUES (?, ?, ?)',(message.guild.id, message.author.id, pointsToAdd))
                                         await self.bot.db.commit()
                                     else:
-                                        await self.bot.db.execute('UPDATE messagecount SET message_count = ? WHERE guild_id = ? AND user_id = ?', (existingPlayer[1] + 1, message.guild.id, message.author.id))
+                                        await self.bot.db.execute('UPDATE messagecount SET message_count = ? WHERE guild_id = ? AND user_id = ?', (existingPlayer[1] + pointsToAdd, message.guild.id, message.author.id))
                                         await self.bot.db.commit()
 
 
