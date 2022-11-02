@@ -6,7 +6,7 @@ class MessageCounting(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
         self.cd_mapping = commands.CooldownMapping.from_cooldown(
-            1, 10, commands.BucketType.member
+            1, 2, commands.BucketType.member
         )
 
     @commands.Cog.listener()
@@ -42,6 +42,8 @@ class MessageCounting(commands.Cog, command_attrs=dict(hidden=True)):
                                         if len(wordThing) <= 2:
                                             splitString.remove(wordThing)
                                     pointsToAdd = len(splitString)
+                                    if pointsToAdd > 10: #cap points per msg at 10
+                                        pointsToAdd = 10
                                     #await message.channel.send(f"You earned {pointsToAdd}")
                                     if not existingPlayer:
                                         await self.bot.db.execute('INSERT INTO messagecount VALUES (?, ?, ?)',(message.guild.id, message.author.id, pointsToAdd))
